@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Zaiqa Zone</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .admin-tab { padding: 0.7rem 1.5rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: white; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .admin-tab.active, .admin-tab:hover { background: var(--primary); border-color: var(--primary); }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; }
+        .dish-form { background: rgba(26,26,46,0.8); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+        .dish-form input, .dish-form select, .dish-form textarea { display: block; width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; }
+        .dish-form label { color: var(--text-light); margin-bottom: 0.3rem; display: block; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" style="text-decoration:none;"><div class="logo">⚙️ ZaiqaZone Admin</div></a>
+        <div class="nav-links">
+            <a href="/"><button class="btn btn-outline">🏠 Home</button></a>
+            <a href="/orders"><button class="btn btn-outline">📋 Orders</button></a>
+            <button class="btn btn-danger" onclick="logout()">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top:2rem;">
+        <h1 style="text-align:center; margin-bottom:2rem;">📊 Admin Dashboard</h1>
+        
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem; margin-bottom:2rem;">
+            <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+            <div class="stat-card"><h3 id="totalDishes">0</h3><p>Total Dishes</p></div>
+            <div class="stat-card"><h3 id="totalUsers">0</h3><p>Total Users</p></div>
+            <div class="stat-card"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchTab('orders')">📦 Orders</button>
+            <button class="admin-tab" onclick="switchTab('dishes')">🍽️ Dishes</button>
+            <button class="admin-tab" onclick="switchTab('addDish')">➕ Add Dish</button>
+            <button class="admin-tab" onclick="switchTab('users')">👥 Users</button>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="admin-section active" id="ordersSection">
+            <div id="ordersTable"></div>
+        </div>
+
+        <!-- Dishes Section -->
+        <div class="admin-section" id="dishesSection">
+            <div id="dishesList"></div>
+        </div>
+
+        <!-- Add Dish Section -->
+        <div class="admin-section" id="addDishSection">
+            <div class="dish-form">
+                <h2 style="margin-bottom:1.5rem;">➕ Add New Dish</h2>
+                <label>Dish Name *</label>
+                <input type="text" id="dishName" placeholder="e.g., Butter Chicken">
+                <label>Description</label>
+                <textarea id="dishDesc" rows="2" placeholder="Delicious dish description..."></textarea>
+                <label>Price (₹) *</label>
+                <input type="number" id="dishPrice" placeholder="350">
+                <label>Category *</label>
+                <select id="dishCategory">
+                    <option>North Indian</option><option>South Indian</option><option>Chinese</option>
+                    <option>Italian</option><option>Fast Food</option><option>Desserts</option>
+                </select>
+                <label>Type *</label>
+                <select id="dishType"><option>veg</option><option>non-veg</option></select>
+                <label>Restaurant *</label>
+                <input type="text" id="dishRestaurant" placeholder="e.g., Punjab Grill">
+                <label>Prep Time</label>
+                <input type="text" id="dishTime" placeholder="20 min" value="20 min">
+                <label>Rating</label>
+                <input type="number" id="dishRating" placeholder="4.0" step="0.1" min="1" max="5" value="4.0">
+                <label>Image URL *</label>
+                <input type="text" id="dishImage" placeholder="https://images.unsplash.com/photo-...">
+                <label><input type="checkbox" id="dishPopular"> Mark as Popular</label>
+                <button class="btn btn-primary" style="width:100%; margin-top:1rem; padding:1rem;" onclick="addDish()">✅ Add Dish</button>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="admin-section" id="usersSection">
+            <div id="usersList"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    const API = 'http://localhost:5000/api';
+    const user = JSON.parse(localStorage.getItem('zaiqa_user'));
+
+    if (!user || user.role !== 'admin') {
+      alert('Admin access only!');
+      window.location.href = '/login';
+    }
+
+    // ===== TAB SWITCHING =====
+    function switchTab(tab) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tab + 'Section').classList.add('active');
+      
+      if (tab === 'orders') fetchOrders();
+      if (tab === 'dishes') fetchDishes();
+      if (tab === 'users') fetchUsers();
+    }
+
+    // ===== FETCH ORDERS =====
+    async function fetchOrders() {
+  try {
+    const res = await fetch(`${API}/orders`, { 
+      headers: { 'Authorization': `Bearer ${user.token}` } 
+    });
+    const orders = await res.json();
+    
+    document.getElementById('totalOrders').textContent = orders.length;
+    document.getElementById('totalRevenue').textContent = '₹' + orders.reduce((s,o) => s + o.totalAmount, 0);
+    
+    document.getElementById('ordersTable').innerHTML = orders.length === 0 
+      ? '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No orders yet</p>' 
+      : `
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:rgba(0,0,0,0.3);">
+            <th style="padding:1rem; text-align:left;">Order ID</th>
+            <th style="padding:1rem; text-align:left;">Customer</th>
+            <th style="padding:1rem; text-align:left;">Items</th>
+            <th style="padding:1rem; text-align:left;">Total</th>
+            <th style="padding:1rem; text-align:left;">Status</th>
+            <th style="padding:1rem; text-align:left;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders.map(o => `
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+              <td style="padding:1rem;">#${o._id?.slice(-6).toUpperCase()}</td>
+              <td style="padding:1rem;">${o.user?.name || 'N/A'}<br><small style="color:var(--text-muted);">${o.user?.email || ''}</small></td>
+              <td style="padding:1rem;">${o.items?.map(i => `${i.name} ×${i.quantity}`).join('<br>') || 'N/A'}</td>
+              <td style="padding:1rem; color:var(--gold); font-weight:700;">₹${o.totalAmount}</td>
+              <td style="padding:1rem;">
+                <select onchange="updateStatus('${o._id}', this.value)" 
+                  style="background:#1a1a2e; color:white; padding:0.5rem; border-radius:8px; cursor:pointer; border:2px solid rgba(255,255,255,0.3); font-weight:600;">
+                  <option value="placed" ${o.status === 'placed' ? 'selected' : ''} style="background:#1a1a2e;">📦 Placed</option>
+                  <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''} style="background:#1a1a2e;">✅ Confirmed</option>
+                  <option value="preparing" ${o.status === 'preparing' ? 'selected' : ''} style="background:#1a1a2e;">👨‍🍳 Preparing</option>
+                  <option value="out_for_delivery" ${o.status === 'out_for_delivery' ? 'selected' : ''} style="background:#1a1a2e;">🛵 Out for Delivery</option>
+                  <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''} style="background:#1a1a2e;">🏠 Delivered</option>
+                </select>
+              </td>
+              <td style="padding:1rem;">
+                <button onclick="deleteOrder('${o._id}')" style="background:#dc2626; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-weight:600;">🗑️ Delete</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  } catch (err) {
+    document.getElementById('ordersTable').innerHTML = '<p style="text-align:center;color:red;padding:2rem;">❌ Failed to load orders</p>';
+  }
+}
+
+    // ===== FETCH DISHES =====
+    async function fetchDishes() {
+      const res = await fetch(`${API}/dishes`);
+      const dishes = await res.json();
+      document.getElementById('totalDishes').textContent = dishes.length;
+      
+      document.getElementById('dishesList').innerHTML = dishes.map(d => `
+        <div style="display:flex; gap:1rem; align-items:center; background:rgba(26,26,46,0.8); padding:1rem; border-radius:12px; margin-bottom:0.5rem;">
+          <img src="${d.image}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
+          <div style="flex:1;"><strong>${d.name}</strong><br><small style="color:var(--text-muted);">${d.restaurant} | ₹${d.price} | ${d.category}</small></div>
+          <button class="btn btn-danger" style="padding:0.3rem 0.8rem;" onclick="deleteDish('${d._id}')">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    // ===== ADD DISH =====
+    async function addDish() {
+      const dish = {
+        name: document.getElementById('dishName').value,
+        description: document.getElementById('dishDesc').value,
+        price: Number(document.getElementById('dishPrice').value),
+        category: document.getElementById('dishCategory').value,
+        type: document.getElementById('dishType').value,
+        restaurant: document.getElementById('dishRestaurant').value,
+        prepTime: document.getElementById('dishTime').value,
+        rating: Number(document.getElementById('dishRating').value),
+        image: document.getElementById('dishImage').value,
+        isPopular: document.getElementById('dishPopular').checked
+      };
+
+      if (!dish.name || !dish.price || !dish.restaurant || !dish.image) {
+        return showToast('Fill all required fields!');
+      }
+
+      const res = await fetch(`${API}/dishes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        body: JSON.stringify(dish)
+      });
+
+      if (res.ok) {
+        showToast('✅ Dish added!');
+        document.querySelectorAll('#addDishSection input, #addDishSection textarea').forEach(i => i.value = '');
+      } else {
+        showToast('❌ Failed to add dish');
+      }
+    }
+
+    // ===== DELETE DISH =====
+    async function deleteDish(id) {
+      if (!confirm('Delete this dish?')) return;
+      await fetch(`${API}/dishes/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${user.token}` } });
+      fetchDishes();
+      showToast('Dish deleted');
+    }
+
+    //--------DELETE ORDER--------
+
+    async function deleteOrder(id) {
+  // Confirm before delete
+  if (!confirm('⚠️ Are you sure you want to delete this order?\n\nThis action cannot be undone!')) {
+    return;
+  }
+
+  try {
+    console.log('Deleting order:', id);
+    
+    const res = await fetch(`${API}/orders/${id}`, {
+      method: 'DELETE',
+      headers: { 
+        'Authorization': `Bearer ${user.token}` 
+      }
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      showToast('🗑️ Order deleted successfully!');
+      fetchOrders(); // Refresh the table
+    } else {
+      showToast('❌ ' + (data.message || 'Failed to delete order'));
+      console.error('Delete error:', data);
+    }
+  } catch (err) {
+    console.error('Delete order error:', err);
+    showToast('❌ Server error! Check if backend is running.');
+  }
+}
+
+    // ===== UPDATE ORDER STATUS =====
+    async function updateStatus(id, status) {
+  try {
+    console.log('Updating order:', id, 'to status:', status);
+    
+    const res = await fetch(`${API}/orders/${id}/status`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${user.token}` 
+      },
+      body: JSON.stringify({ status: status })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      showToast(' Status updated successfully!');
+      fetchOrders(); // Refresh the orders table
+    } else {
+      showToast(' ' + (data.message || 'Failed to update status'));
+      console.error('Update error:', data);
+    }
+  } catch (err) {
+    console.error('Update status error:', err);
+    showToast(' Server error! Check if backend is running.');
+  }
+}
+
+    // ===== FETCH USERS =====
+    async function fetchUsers() {
+      const res = await fetch(`${API}/auth/users`, { headers: { 'Authorization': `Bearer ${user.token}` } });
+      const users = await res.json();
+      document.getElementById('totalUsers').textContent = users.length;
+      document.getElementById('usersList').innerHTML = users.map(u => `
+        <div style="background:rgba(26,26,46,0.8); padding:1rem; border-radius:12px; margin-bottom:0.5rem; display:flex; justify-content:space-between;">
+          <div><strong>${u.name}</strong><br><small style="color:var(--text-muted);">${u.email} | ${u.role}</small></div>
+          <span style="color:var(--text-muted);">Joined: ${new Date(u.createdAt).toLocaleDateString()}</span>
+        </div>
+      `).join('');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 2500);
+    }
+
+    function logout() {
+      localStorage.removeItem('zaiqa_user');
+      window.location.href = '/';
+    }
+
+    // Init
+    fetchOrders();
+    </script>
+</body>
+</html>

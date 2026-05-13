@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaiqa Zone - Order Food & Book Tables</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" style="text-decoration:none;"><div class="logo">🍽️ ZaiqaZone</div></a>
+    <div class="nav-links" id="navLinks">
+        <button class="btn btn-outline" onclick="openCart()" id="cartNavBtn">🛒 Cart <span id="cartCount">0</span></button>
+        <button class="btn btn-outline" onclick="openBooking()" id="bookingNavBtn">📅 Book Table</button>
+        <a href="/orders" id="ordersNavLink"><button class="btn btn-outline">📋 My Orders</button></a>
+        <a href="/login" id="loginLink"><button class="btn btn-primary" id="loginBtn">Login</button></a>
+        <button class="btn btn-primary" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+        <a href="/admin" id="adminLink"><button class="btn btn-secondary" id="adminBtn" style="display:none;">⚙️ Admin</button></a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Zaiqa Zone</h1>
+    <p>Discover 50+ Premium Dishes • Book Tables • Real Reviews • 3D Experience</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <button class="btn" id="heroOrderBtn" style="background:white; color:var(--primary); font-size:1.1rem; padding:0.8rem 2rem; font-weight:700;" onclick="quickOrder()">🍕 Order Now</button>
+<button class="btn btn-secondary" id="heroBookBtn" style="font-size:1.2rem; padding:1rem 2.5rem;" onclick="openBooking()">📅 Book Table</button>
+        <div id="adminMessage" style="display:none; background:rgba(124,58,237,0.2); border:2px solid var(--secondary); padding:1rem 2rem; border-radius:12px; margin-top:1.5rem; max-width:600px; margin-left:auto; margin-right:auto;">
+    <p style="color:white; font-weight:600; font-size:1rem;">⚙️ Welcome Admin! <a href="/admin" style="color:#FFD700; text-decoration:underline; font-weight:700;">Go to Admin Panel</a> to manage orders, dishes & users.</p>
+</div>
+    </div>
+</section>
+
+<div class="categories" id="categories">
+    <button class="cat-btn active" onclick="filterCategory('All')">🔥 All</button>
+    <button class="cat-btn" onclick="filterCategory('North Indian')">North Indian</button>
+    <button class="cat-btn" onclick="filterCategory('South Indian')">South Indian</button>
+    <button class="cat-btn" onclick="filterCategory('Chinese')">Chinese</button>
+    <button class="cat-btn" onclick="filterCategory('Italian')">Italian</button>
+    <button class="cat-btn" onclick="filterCategory('Fast Food')">Fast Food</button>
+    <button class="cat-btn" onclick="filterCategory('Desserts')">🍰 Desserts</button>
+</div>
+
+<div class="container">
+    <input type="text" class="form-input" placeholder="🔍 Search dishes, restaurants..." oninput="searchDishes(this.value)" style="margin-bottom:2rem;">
+    <div class="dish-grid" id="dishGrid">
+        <div style="text-align:center; padding:3rem; grid-column:1/-1;">Loading delicious dishes... 🍽️</div>
+    </div>
+</div>
+
+<!-- ============ PREMIUM BOOKING MODAL ============ -->
+<div class="modal" id="bookingModal">
+    <div class="modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <h2 style="font-size:1.8rem;">🍽️ Book a Table</h2>
+            <button class="btn btn-outline" onclick="closeModal('bookingModal')" style="font-size:1.2rem;">✕</button>
+        </div>
+
+        <!-- Restaurant Selection -->
+        <div class="form-group">
+            <label>🏪 Select Restaurant</label>
+            <select class="form-input" id="bookingRestaurant" onchange="updateRestaurantPreview()">
+                <option value="">Choose a restaurant...</option>
+                <option value="Punjab Grill" data-image="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400">Punjab Grill - Connaught Place</option>
+                <option value="Sagar Ratna" data-image="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400">Sagar Ratna - Janpath</option>
+                <option value="Wow! Momos" data-image="https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=400">Wow! Momos - Karol Bagh</option>
+                <option value="Domino's" data-image="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400">Domino's - Lajpat Nagar</option>
+                <option value="Burger King" data-image="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400">Burger King - Saket</option>
+                <option value="Haldiram's" data-image="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400">Haldiram's - Chandni Chowk</option>
+                <option value="Biryani House" data-image="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400">Biryani House - Hauz Khas</option>
+                <option value="Natural's Ice Cream" data-image="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400">Natural's - Green Park</option>
+            </select>
+            <div id="restaurantPreview" style="margin-top:0.5rem; display:none;">
+                <img id="restaurantPreviewImg" src="" style="width:100%; height:150px; object-fit:cover; border-radius:12px;">
+            </div>
+        </div>
+
+        <!-- Date & Time Row -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+                <label>📅 Date</label>
+                <input type="date" class="form-input" id="bookingDate" min="">
+            </div>
+            <div class="form-group">
+                <label>🕐 Time Slot</label>
+                <select class="form-input" id="bookingTime">
+                    <option value="">Select time</option>
+                    <option>11:00 AM</option><option>11:30 AM</option>
+                    <option>12:00 PM</option><option>12:30 PM</option>
+                    <option>1:00 PM</option><option>1:30 PM</option>
+                    <option>6:00 PM</option><option>6:30 PM</option>
+                    <option>7:00 PM</option><option>7:30 PM</option>
+                    <option>8:00 PM</option><option>8:30 PM</option>
+                    <option>9:00 PM</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Guests Counter -->
+        <div class="form-group">
+            <label>👥 Number of Guests</label>
+            <div style="display:flex; align-items:center; gap:1rem; background:rgba(255,255,255,0.05); padding:0.8rem; border-radius:12px;">
+                <button class="btn btn-outline" onclick="changeGuests(-1)" style="font-size:1.5rem; padding:0.3rem 1rem;">−</button>
+                <span id="guestCount" style="font-size:1.5rem; font-weight:700; min-width:50px; text-align:center;">2</span>
+                <button class="btn btn-outline" onclick="changeGuests(1)" style="font-size:1.5rem; padding:0.3rem 1rem;">+</button>
+            </div>
+        </div>
+
+        <!-- Occasion & Seating Row -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+                <label>🎉 Occasion</label>
+                <select class="form-input" id="bookingOccasion">
+                    <option value="none">None</option>
+                    <option value="birthday">🎂 Birthday</option>
+                    <option value="anniversary">💑 Anniversary</option>
+                    <option value="date_night">🌹 Date Night</option>
+                    <option value="business">💼 Business</option>
+                    <option value="party">🎊 Party</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>💺 Seating</label>
+                <select class="form-input" id="bookingSeating">
+                    <option value="indoor">🏠 Indoor</option>
+                    <option value="outdoor">🌿 Outdoor</option>
+                    <option value="rooftop">🌇 Rooftop</option>
+                    <option value="private">🔒 Private Room</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Special Request -->
+        <div class="form-group">
+            <label>📝 Special Request (Optional)</label>
+            <textarea class="form-input" id="bookingRequest" rows="2" placeholder="Any special requests? e.g., wheelchair access, high chair for baby, allergen info..."></textarea>
+        </div>
+
+        <!-- Book Button -->
+        <button class="btn btn-primary" style="width:100%; padding:1rem; font-size:1.2rem; margin-top:0.5rem;" onclick="confirmBooking()">
+            ✅ Confirm Booking
+        </button>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<!-- CART MODAL -->
+<div class="modal" id="cartModal">
+    <div class="modal-content" style="max-width:600px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>🛒 Your Cart</h2>
+            <button class="btn btn-outline" onclick="closeCartModal()" style="font-size:1.2rem;">✕</button>
+        </div>
+        <div id="cartItems" style="max-height:400px; overflow-y:auto; margin:1rem 0;">
+            <p style="color:var(--text-muted); text-align:center;">Cart is empty</p>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1);">
+            <span style="font-size:1.3rem; font-weight:700;">Total: <span id="cartTotal" style="color:var(--gold);">₹0</span></span>
+            <button class="btn btn-primary" onclick="placeOrder()">🚀 Place Order</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="../js/main.js"></script>
+</body>
+</html>

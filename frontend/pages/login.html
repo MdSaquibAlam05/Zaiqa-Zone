@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Zaiqa Zone</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>🔐 Login</h2>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-input" id="email" placeholder="you@email.com">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-input" id="password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button>
+        <p style="text-align:center; margin-top:1rem;">
+            Don't have an account? <a href="/signup" style="color:var(--primary);">Sign Up</a>
+        </p>
+        <p style="text-align:center; margin-top:0.5rem;">
+            <a href="/" style="color:var(--secondary);">← Back to Home</a>
+        </p>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+    const API = 'http://localhost:5000/api';
+
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        if (!email || !password) return showToast('Fill all fields!');
+        
+        try {
+            const res = await fetch(`${API}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                localStorage.setItem('zaiqa_user', JSON.stringify(data));
+                showToast(`Welcome back, ${data.name}! 🎉`);
+                setTimeout(() => window.location.href = '/', 1000);
+            } else {
+                showToast(data.message || 'Login failed');
+            }
+        } catch (err) {
+            showToast('Server error! Is backend running?');
+        }
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+    </script>
+</body>
+</html>
