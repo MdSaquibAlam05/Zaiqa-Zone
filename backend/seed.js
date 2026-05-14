@@ -620,6 +620,29 @@ const seedDB = async () => {
     console.log(' 50 Dishes + 1 Admin\n');
     
     mongoose.connection.close();
+
+// Create admin user
+const User = require('./models/User');
+const bcrypt = require('bcryptjs');
+
+const salt = await bcrypt.genSalt(10);
+const hashedPassword = await bcrypt.hash('admin123', salt);
+
+await User.findOneAndUpdate(
+  { email: 'admin@zaiqazone.com' },
+  {
+    name: 'Admin',
+    email: 'admin@zaiqazone.com',
+    password: hashedPassword,
+    role: 'admin'
+  },
+  { upsert: true, new: true }
+);
+
+console.log('✅ Admin created/updated!');
+console.log('📧 admin@zaiqazone.com');
+console.log('🔑 admin123');
+
     process.exit(0);
   } catch (error) {
     console.error(' Error:', error.message);
