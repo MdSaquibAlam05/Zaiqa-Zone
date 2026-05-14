@@ -1,4 +1,5 @@
-const API = 'http://localhost:5000/api';
+// const API = 'http://localhost:5000/api';
+const API = '/api';
 let dishes = [];
 let cart = JSON.parse(localStorage.getItem('zaiqa_cart')) || [];
 let currentUser = JSON.parse(localStorage.getItem('zaiqa_user')) || null;
