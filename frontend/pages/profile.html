@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Zaiqa Zone</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .profile-container { max-width: 800px; margin: 2rem auto; }
+        .profile-card { background: rgba(26,26,46,0.8); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1); }
+        .address-card { background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border: 2px solid transparent; cursor: pointer; transition: all 0.3s; }
+        .address-card:hover { border-color: rgba(255,255,255,0.2); }
+        .address-card.default { border-color: var(--primary); }
+        .badge { padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+        .badge-default { background: rgba(226,55,68,0.2); color: #FCA5A5; }
+        .badge-label { background: rgba(124,58,237,0.2); color: #C4B5FD; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" style="text-decoration:none;"><div class="logo">🍽️ ZaiqaZone</div></a>
+        <div class="nav-links">
+            <a href="/"><button class="btn btn-outline">🏠 Home</button></a>
+            <a href="/orders"><button class="btn btn-outline">📋 Orders</button></a>
+            <a href="/checkout"><button class="btn btn-outline">🛒 Cart</button></a>
+            <button class="btn btn-danger" onclick="logout()">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Personal Info -->
+        <div class="profile-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2>👤 Personal Information</h2>
+                <button class="btn btn-outline btn-sm" onclick="toggleEditProfile()">✏️ Edit</button>
+            </div>
+            <div id="profileView">
+                <p><strong>Name:</strong> <span id="displayName">-</span></p>
+                <p><strong>Email:</strong> <span id="displayEmail">-</span></p>
+                <p><strong>Phone:</strong> <span id="displayPhone">-</span></p>
+            </div>
+            <div id="profileEdit" style="display:none;">
+                <input type="text" class="form-input" id="editName" placeholder="Full Name">
+                <input type="text" class="form-input" id="editPhone" placeholder="Phone Number">
+                <button class="btn btn-primary" style="margin-top:0.5rem;" onclick="saveProfile()">💾 Save</button>
+                <button class="btn btn-outline" style="margin-top:0.5rem;" onclick="toggleEditProfile()">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="profile-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2>📍 My Addresses</h2>
+                <button class="btn btn-outline btn-sm" onclick="toggleAddAddress()">➕ Add New</button>
+            </div>
+            
+            <div id="addressesList"></div>
+            
+            <!-- Add Address Form -->
+            <div id="addAddressForm" style="display:none; background:rgba(255,255,255,0.03); padding:1rem; border-radius:12px; margin-top:1rem;">
+                <h3 style="margin-bottom:1rem;">New Address</h3>
+                <input type="text" class="form-input" id="newStreet" placeholder="Street / Area *">
+                <input type="text" class="form-input" id="newCity" placeholder="City *">
+                <input type="text" class="form-input" id="newState" placeholder="State">
+                <input type="text" class="form-input" id="newPincode" placeholder="Pincode *">
+                <input type="text" class="form-input" id="newPhone" placeholder="Phone *">
+                <select class="form-input" id="newLabel">
+                    <option value="Home">🏠 Home</option>
+                    <option value="Office">🏢 Office</option>
+                    <option value="Other">📍 Other</option>
+                </select>
+                <button class="btn btn-primary" style="width:100%;" onclick="addAddress()">💾 Save Address</button>
+                <button class="btn btn-outline" style="width:100%; margin-top:0.5rem;" onclick="toggleAddAddress()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="../js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Zaiqa Zone</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .checkout-container { max-width: 900px; margin: 2rem auto; }
+        .checkout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .card { background: rgba(26,26,46,0.8); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); }
+        .address-option { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 0.5rem; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
+        .address-option:hover { border-color: rgba(255,255,255,0.2); }
+        .address-option.selected { border-color: #E23744; }
+        .badge { padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+        .badge-primary { background: rgba(226,55,68,0.2); color: #FCA5A5; }
+        .badge-purple { background: rgba(124,58,237,0.2); color: #C4B5FD; }
+        @media (max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" style="text-decoration:none;"><div class="logo">🍽️ ZaiqaZone</div></a>
+        <div class="nav-links">
+            <a href="/"><button class="btn btn-outline">🏠 Home</button></a>
+            <a href="/orders"><button class="btn btn-outline">📋 Orders</button></a>
+            <a href="/profile"><button class="btn btn-outline">👤 Profile</button></a>
+            <button class="btn btn-danger" onclick="logout()">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <h1 style="text-align:center; margin-bottom:2rem;">📦 Checkout</h1>
+        
+        <div class="checkout-grid">
+            <!-- Address Section -->
+            <div class="card">
+                <h2 style="margin-bottom:1rem;">📍 Delivery Address</h2>
+                <div id="savedAddresses"></div>
+                <div id="newAddressForm" style="display:none;">
+                    <input type="text" class="form-input" id="street" placeholder="Street / Area *">
+                    <input type="text" class="form-input" id="city" placeholder="City *">
+                    <input type="text" class="form-input" id="state" placeholder="State">
+                    <input type="text" class="form-input" id="pincode" placeholder="Pincode *">
+                    <input type="text" class="form-input" id="phone" placeholder="Phone Number *">
+                    <select class="form-input" id="label">
+                        <option value="Home">🏠 Home</option>
+                        <option value="Office">🏢 Office</option>
+                        <option value="Other">📍 Other</option>
+                    </select>
+                    <label style="display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">
+                        <input type="checkbox" id="saveAddress"> Save for future orders
+                    </label>
+                    <button class="btn btn-primary" onclick="addNewAddress()" style="width:100%; margin-top:0.5rem;">💾 Save & Use This Address</button>
+                </div>
+                <button class="btn btn-outline" onclick="toggleNewAddress()" style="width:100%; margin-top:1rem;" id="toggleBtn">
+                    ➕ Add New Address
+                </button>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="card">
+                <h2 style="margin-bottom:1rem;">🛒 Order Summary</h2>
+                <div id="checkoutItems"></div>
+                <div style="border-top:1px solid rgba(255,255,255,0.1); margin-top:1rem; padding-top:1rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <span style="color:var(--text-muted);">Subtotal</span>
+                        <span id="subtotal">₹0</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <span style="color:var(--text-muted);">Delivery Fee</span>
+                        <span>₹40</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:1.3rem; font-weight:700; margin-top:0.5rem;">
+                        <span>Total</span>
+                        <span style="color:#FFD700;" id="grandTotal">₹0</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width:100%; padding:1rem; margin-top:1rem; font-size:1.1rem;" onclick="placeOrderWithAddress()">
+                    🚀 Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="../js/checkout.js"></script>
+</body>
+</html>

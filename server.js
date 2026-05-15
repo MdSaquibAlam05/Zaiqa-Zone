@@ -86,18 +86,31 @@ app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'pages', 'signup.html'));
 });
 
+app.get('/orders', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'pages', 'orders.html'));
+});
+
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'pages', 'profile.html'));
+});
+
+app.get('/checkout', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'pages', 'checkout.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'pages', 'admin.html'));
 });
 
-app.get('/orders', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'pages', 'orders.html'));
-});
+
+
+
 
 // Home Route - LAST
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'pages', 'index.html'));
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

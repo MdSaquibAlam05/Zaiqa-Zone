@@ -15,8 +15,10 @@
         <button class="btn btn-outline" onclick="openCart()" id="cartNavBtn">🛒 Cart <span id="cartCount">0</span></button>
         <button class="btn btn-outline" onclick="openBooking()" id="bookingNavBtn">📅 Book Table</button>
         <a href="/orders" id="ordersNavLink"><button class="btn btn-outline">📋 My Orders</button></a>
+        <a href="/profile" id="profileNavLink"><button class="btn btn-outline">👤 Profile</button></a>
+        <a href="/checkout" id="checkoutNavLink"><button class="btn btn-outline">🛒 Checkout</button></a>
         <a href="/login" id="loginLink"><button class="btn btn-primary" id="loginBtn">Login</button></a>
-        <button class="btn btn-primary" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+        <button class="btn btn-primary" id="logoutBtn" style="display:none; cursor:pointer; pointer-events:auto;" onclick="logout()">🚪 Logout</button>
         <a href="/admin" id="adminLink"><button class="btn btn-secondary" id="adminBtn" style="display:none;">⚙️ Admin</button></a>
     </div>
 </nav>
@@ -160,7 +162,9 @@
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1);">
             <span style="font-size:1.3rem; font-weight:700;">Total: <span id="cartTotal" style="color:var(--gold);">₹0</span></span>
-            <button class="btn btn-primary" onclick="placeOrder()">🚀 Place Order</button>
+            <a href="/checkout" onclick="closeCartModal()" style="text-decoration:none;">
+            <button class="btn btn-primary" style="width:100%;">🛒 Go to Checkout</button>
+            </a>
         </div>
     </div>
 </div>

@@ -565,3 +565,21 @@ select.form-input:focus {
   font-size: 0.9rem;
   line-height: 1.5;
 }
+
+/* ===== LOGOUT BUTTON FIX ===== */
+#logoutBtn {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  z-index: 100 !important;
+  position: relative !important;
+}
+
+#logoutBtn:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* ===== NAV LINK BUTTONS ===== */
+.nav-links a {
+  text-decoration: none;
+}

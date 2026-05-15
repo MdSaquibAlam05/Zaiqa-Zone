@@ -448,6 +448,68 @@ function quickOrder() {
 }
 
 // ============ UI ============
+// // ============ UI ============
+// function updateUI() {
+//   const loginBtn = document.getElementById('loginBtn');
+//   const logoutBtn = document.getElementById('logoutBtn');
+//   const adminBtn = document.getElementById('adminBtn');
+//   const adminMsg = document.getElementById('adminMessage');
+//   const cartNavBtn = document.getElementById('cartNavBtn');
+//   const bookingNavBtn = document.getElementById('bookingNavBtn');
+//   const ordersNavLink = document.getElementById('ordersNavLink');
+//   const loginLink = document.getElementById('loginLink');
+//   const adminLink = document.getElementById('adminLink');
+//   const heroOrderBtn = document.getElementById('heroOrderBtn');
+//   const heroBookBtn = document.getElementById('heroBookBtn');
+  
+//   if (currentUser) {
+//     // ===== USER LOGGED IN =====
+//     if (loginBtn) loginBtn.style.display = 'none';
+//     if (loginLink) loginLink.style.display = 'none';
+//     if (logoutBtn) logoutBtn.style.display = 'inline-block';
+//     if (ordersNavLink) ordersNavLink.style.display = 'inline-block';
+    
+//     if (currentUser.role === 'admin') {
+//       // ===== ADMIN USER =====
+//       if (cartNavBtn) cartNavBtn.style.display = 'none';
+//       if (bookingNavBtn) bookingNavBtn.style.display = 'none';
+//       if (ordersNavLink) ordersNavLink.style.display = 'none';
+//       if (heroOrderBtn) heroOrderBtn.style.display = 'none';
+//       if (heroBookBtn) heroBookBtn.style.display = 'none';
+//       if (adminBtn) adminBtn.style.display = 'inline-block';
+//       if (adminLink) adminLink.style.display = 'inline-block';
+//       if (adminMsg) adminMsg.style.display = 'block';
+//     } else {
+//       // ===== NORMAL USER =====
+//       if (cartNavBtn) cartNavBtn.style.display = 'inline-block';
+//       if (bookingNavBtn) bookingNavBtn.style.display = 'inline-block';
+//       if (heroOrderBtn) heroOrderBtn.style.display = 'inline-block';
+//       if (heroBookBtn) heroBookBtn.style.display = 'inline-block';
+//       if (adminBtn) adminBtn.style.display = 'none';
+//       if (adminLink) adminLink.style.display = 'none';
+//       if (adminMsg) adminMsg.style.display = 'none';
+//     }
+//   } else {
+//     // ===== NO USER LOGGED IN =====
+//     if (loginBtn) loginBtn.style.display = 'inline-block';
+//     if (loginLink) loginLink.style.display = 'inline-block';
+//     if (logoutBtn) logoutBtn.style.display = 'none';
+//     if (cartNavBtn) cartNavBtn.style.display = 'none';
+//     if (bookingNavBtn) bookingNavBtn.style.display = 'none';
+//     if (ordersNavLink) ordersNavLink.style.display = 'none';
+//     if (heroOrderBtn) heroOrderBtn.style.display = 'none';
+//     if (heroBookBtn) heroBookBtn.style.display = 'none';
+//     if (adminBtn) adminBtn.style.display = 'none';
+//     if (adminLink) adminLink.style.display = 'none';
+//     if (adminMsg) adminMsg.style.display = 'none';
+//   }
+// }
+
+// function logout() {
+//   localStorage.removeItem('zaiqa_user');
+//   window.location.href = '/';
+// }
+
 // ============ UI ============
 function updateUI() {
   const loginBtn = document.getElementById('loginBtn');
@@ -461,19 +523,29 @@ function updateUI() {
   const adminLink = document.getElementById('adminLink');
   const heroOrderBtn = document.getElementById('heroOrderBtn');
   const heroBookBtn = document.getElementById('heroBookBtn');
+  const profileNavLink = document.getElementById('profileNavLink');
+  const checkoutNavLink = document.getElementById('checkoutNavLink');
   
   if (currentUser) {
     // ===== USER LOGGED IN =====
     if (loginBtn) loginBtn.style.display = 'none';
     if (loginLink) loginLink.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (logoutBtn) {
+      logoutBtn.style.display = 'inline-block';
+      logoutBtn.style.cursor = 'pointer';
+      logoutBtn.style.pointerEvents = 'auto';
+    }
     if (ordersNavLink) ordersNavLink.style.display = 'inline-block';
+    if (profileNavLink) profileNavLink.style.display = 'inline-block';
+    if (checkoutNavLink) checkoutNavLink.style.display = 'inline-block';
     
     if (currentUser.role === 'admin') {
       // ===== ADMIN USER =====
       if (cartNavBtn) cartNavBtn.style.display = 'none';
       if (bookingNavBtn) bookingNavBtn.style.display = 'none';
       if (ordersNavLink) ordersNavLink.style.display = 'none';
+      if (profileNavLink) profileNavLink.style.display = 'none';
+      if (checkoutNavLink) checkoutNavLink.style.display = 'none';
       if (heroOrderBtn) heroOrderBtn.style.display = 'none';
       if (heroBookBtn) heroBookBtn.style.display = 'none';
       if (adminBtn) adminBtn.style.display = 'inline-block';
@@ -497,6 +569,8 @@ function updateUI() {
     if (cartNavBtn) cartNavBtn.style.display = 'none';
     if (bookingNavBtn) bookingNavBtn.style.display = 'none';
     if (ordersNavLink) ordersNavLink.style.display = 'none';
+    if (profileNavLink) profileNavLink.style.display = 'none';
+    if (checkoutNavLink) checkoutNavLink.style.display = 'none';
     if (heroOrderBtn) heroOrderBtn.style.display = 'none';
     if (heroBookBtn) heroBookBtn.style.display = 'none';
     if (adminBtn) adminBtn.style.display = 'none';
@@ -507,6 +581,7 @@ function updateUI() {
 
 function logout() {
   localStorage.removeItem('zaiqa_user');
+  localStorage.removeItem('zaiqa_cart');
   window.location.href = '/';
 }
 
